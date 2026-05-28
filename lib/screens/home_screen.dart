@@ -36,43 +36,120 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
+  Widget buildNavItem({
+    required IconData icon,
+    required String label,
+    required int index,
+  }) {
+    final bool isSelected = currentIndex == index;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          currentIndex = index;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? 18 : 0,
+          vertical: 10,
+        ),
+        decoration: BoxDecoration(
+          gradient: isSelected
+              ? const LinearGradient(
+            colors: [
+              Color(0xff2563EB),
+              Color(0xff1D4ED8),
+            ],
+          )
+              : null,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 28,
+            ),
+
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xff0F172A),
+
       body: pages[currentIndex],
 
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.only(
+          left: 18,
+          right: 18,
+          bottom: 18,
+        ),
+        height: 80,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xff1E3A8A),
+              Color(0xff2563EB),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(40),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.withOpacity(0.35),
+              blurRadius: 25,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            buildNavItem(
+              icon: Icons.home_rounded,
+              label: "Home",
+              index: 0,
+            ),
 
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
+            buildNavItem(
+              icon: Icons.calendar_month_rounded,
+              label: "Booking",
+              index: 1,
+            ),
 
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, size: 28),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month, size: 28),
-            label: "My Booking",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite, size: 28),
-            label: "My Favorites",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person, size: 28),
-            label: "Profile",
-          ),
-        ],
+            buildNavItem(
+              icon: Icons.favorite_rounded,
+              label: "Favorite",
+              index: 2,
+            ),
+
+            buildNavItem(
+              icon: Icons.person_rounded,
+              label: "Profile",
+              index: 3,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -86,9 +163,19 @@ class HomePage extends StatelessWidget {
     final HomeController controller = Get.find<HomeController>();
 
     return Scaffold(
+      backgroundColor: const Color(0xffF8FAFC),
+
       appBar: AppBar(
-        title: const Text("Iftiinshe Cars"),
+        backgroundColor: const Color(0xff2563EB),
+        elevation: 0,
         centerTitle: true,
+        title: const Text(
+          "Iftiinshe Cars",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
 
       body: Obx(() {
@@ -108,7 +195,7 @@ class HomePage extends StatelessWidget {
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(14),
           itemCount: controller.cars.length,
           itemBuilder: (context, index) {
             final car = controller.cars[index];
@@ -118,11 +205,18 @@ class HomePage extends StatelessWidget {
                 Get.to(() => CarDetailsScreen(car: car));
               },
 
-              child: Card(
-                elevation: 4,
-                margin: const EdgeInsets.only(bottom: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
 
                 child: Column(
@@ -130,19 +224,19 @@ class HomePage extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15),
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25),
                       ),
                       child: Image.network(
                         car.image,
-                        height: 200,
+                        height: 220,
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(15),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -150,19 +244,28 @@ class HomePage extends StatelessWidget {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                car.name,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
+                              Expanded(
+                                child: Text(
+                                  car.name,
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff0F172A),
+                                  ),
                                 ),
                               ),
 
-                              IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.favorite_border,
-                                  color: Colors.red,
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.favorite_border,
+                                    color: Colors.red,
+                                  ),
                                 ),
                               ),
                             ],
@@ -178,18 +281,25 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
 
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 12),
 
                           Row(
                             children: [
                               const Icon(
                                 Icons.local_gas_station,
                                 size: 18,
+                                color: Colors.blue,
                               ),
                               const SizedBox(width: 5),
                               Text(car.fuelType),
+
                               const SizedBox(width: 15),
-                              const Icon(Icons.settings, size: 18),
+
+                              const Icon(
+                                Icons.settings,
+                                size: 18,
+                                color: Colors.blue,
+                              ),
                               const SizedBox(width: 5),
                               Text(car.transmission),
                             ],
@@ -209,14 +319,29 @@ class HomePage extends StatelessWidget {
                             ],
                           ),
 
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 15),
 
-                          Text(
-                            "\$${car.pricePerDay}/day",
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xff2563EB),
+                                  Color(0xff1D4ED8),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Text(
+                              "\$${car.pricePerDay}/day",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
