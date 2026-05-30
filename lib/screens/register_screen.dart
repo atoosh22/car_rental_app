@@ -106,13 +106,25 @@ class RegisterScreen extends StatelessWidget {
                 onPressed: () async {
                   try {
 
-                    await supabase.auth.signUp(
+                    final response = await supabase.auth.signUp(
                       email: email.text.trim(),
                       password: password.text.trim(),
                       data: {
                         "name": name.text.trim(),
                       },
                     );
+
+                    final user = response.user;
+
+                    if (user != null) {
+                      await supabase.from('profiles').insert({
+                        'id': user.id,
+                        'name': name.text.trim(),
+                        'email': email.text.trim(),
+                        'phone': '',
+                        'image': '',
+                      });
+                    }
 
                     Get.snackbar(
                       "Success",

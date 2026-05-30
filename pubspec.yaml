@@ -13,6 +13,8 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   device_preview: ^1.2.0
+  image_picker: ^1.1.2
+  path: ^1.9.0
 
   # STATE MANAGEMENT
   get: ^4.6.6
