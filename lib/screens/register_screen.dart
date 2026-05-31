@@ -8,6 +8,7 @@ class RegisterScreen extends StatelessWidget {
 
   final name = TextEditingController();
   final email = TextEditingController();
+  final phone = TextEditingController();
   final password = TextEditingController();
 
   final supabase = SupabaseService.client;
@@ -30,8 +31,7 @@ class RegisterScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
-            Text(
+            const Text(
               "Create Account",
               style: TextStyle(
                 fontSize: 32,
@@ -62,11 +62,32 @@ class RegisterScreen extends StatelessWidget {
 
             TextField(
               controller: email,
+              keyboardType: TextInputType.emailAddress,
               style: const TextStyle(
                 fontSize: 22,
               ),
               decoration: InputDecoration(
                 labelText: "Email",
+                labelStyle: const TextStyle(
+                  fontSize: 22,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                contentPadding: const EdgeInsets.all(20),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            TextField(
+              controller: phone,
+              keyboardType: TextInputType.phone,
+              style: const TextStyle(
+                fontSize: 22,
+              ),
+              decoration: InputDecoration(
+                labelText: "Phone Number",
                 labelStyle: const TextStyle(
                   fontSize: 22,
                 ),
@@ -105,12 +126,12 @@ class RegisterScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   try {
-
                     final response = await supabase.auth.signUp(
                       email: email.text.trim(),
                       password: password.text.trim(),
                       data: {
                         "name": name.text.trim(),
+                        "phone": phone.text.trim(),
                       },
                     );
 
@@ -121,7 +142,7 @@ class RegisterScreen extends StatelessWidget {
                         'id': user.id,
                         'name': name.text.trim(),
                         'email': email.text.trim(),
-                        'phone': '',
+                        'phone': phone.text.trim(),
                         'image': '',
                       });
                     }
@@ -133,15 +154,12 @@ class RegisterScreen extends StatelessWidget {
                     );
 
                     Get.offAll(() => LoginScreen());
-
                   } catch (e) {
-
                     Get.snackbar(
                       "Error",
                       e.toString(),
                       snackPosition: SnackPosition.BOTTOM,
                     );
-
                   }
                 },
                 child: const Text(
