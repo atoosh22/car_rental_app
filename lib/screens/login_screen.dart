@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../services/supabase_service.dart';
+import 'admin_screen.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 
@@ -90,8 +92,19 @@ class LoginScreen extends StatelessWidget {
                       password: password.text.trim(),
                     );
 
-                    Get.to(() => const HomeScreen());
+                    final profile = await supabase
+                        .from('profiles')
+                        .select()
+                        .eq('email', email.text.trim())
+                        .single();
 
+                    final role = profile['role'];
+
+                    if (role == 'admin') {
+                      Get.offAll(() => const AdminScreen());
+                    } else {
+                      Get.offAll(() => const HomeScreen());
+                    }
                   } catch (e) {
                     Get.snackbar(
                       "Error",
