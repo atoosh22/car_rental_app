@@ -28,7 +28,7 @@ setState(() {
 isLoading = true;
 });
 
-```
+
   final data = await supabase
       .from('bookings')
       .select('''
@@ -60,7 +60,7 @@ isLoading = true;
     isLoading = false;
   });
 }
-```
+
 
 }
 
@@ -72,7 +72,6 @@ await supabase
 .update({'status': status})
 .eq('id', bookingId);
 
-```
   await loadBookings();
 
   if (!mounted) return;
@@ -92,7 +91,7 @@ await supabase
     ),
   );
 }
-```
+
 
 }
 
@@ -148,7 +147,7 @@ itemBuilder: (context, index) {
 final booking =
 bookings[index];
 
-```
+
                   final status =
                       booking['status'] ??
                           'pending';
@@ -357,7 +356,7 @@ bookings[index];
               ),
             ),
 );
-```
+
 
 }
 }
