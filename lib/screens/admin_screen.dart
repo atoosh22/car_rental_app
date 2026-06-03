@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../screens/login_screen.dart';
 import 'manage_cars_screen.dart';
 import 'manage_bookings_screen.dart';
 import 'manage_users_screen.dart';
@@ -36,9 +37,9 @@ class _AdminScreenState extends State<AdminScreen> {
       final bookings = await supabase.from('bookings').select();
 
       final pending = bookings
-          .where(
-            (e) => e['status'].toString().toLowerCase() == 'pending',
-      )
+          .where((e) =>
+              (e['status'] ?? '').toString().toLowerCase() ==
+              'pending')
           .toList();
 
       setState(() {
@@ -49,15 +50,12 @@ class _AdminScreenState extends State<AdminScreen> {
         isLoading = false;
       });
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("Dashboard error: $e");
+      setState(() => isLoading = false);
     }
   }
 
-  Widget dashboardCard(
-      String title,
-      String value,
-      IconData icon,
-      ) {
+  Widget dashboardCard(String title, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -76,11 +74,7 @@ class _AdminScreenState extends State<AdminScreen> {
           CircleAvatar(
             radius: 22,
             backgroundColor: Colors.blue.shade100,
-            child: Icon(
-              icon,
-              color: Colors.blue,
-              size: 22,
-            ),
+            child: Icon(icon, color: Colors.blue, size: 22),
           ),
           const SizedBox(height: 6),
           Text(
@@ -93,35 +87,23 @@ class _AdminScreenState extends State<AdminScreen> {
           const SizedBox(height: 2),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 13,
-            ),
+            style: const TextStyle(fontSize: 13),
           ),
         ],
       ),
     );
   }
 
-  Widget menuTile(
-      String title,
-      IconData icon,
-      VoidCallback onTap,
-      ) {
+  Widget menuTile(String title, IconData icon, VoidCallback onTap) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
-        leading: Icon(
-          icon,
-          color: Colors.blue,
-        ),
+        leading: Icon(icon, color: Colors.blue),
         title: Text(title),
-        trailing: const Icon(
-          Icons.arrow_forward_ios,
-          size: 18,
-        ),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 18),
         onTap: onTap,
       ),
     );
@@ -131,79 +113,62 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xfff5f7fb),
+
       appBar: AppBar(
         title: const Text("Admin Dashboard"),
         centerTitle: true,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-      ),
-      body: isLoading
-          ? const Center(
-        child: CircularProgressIndicator(),
-      )
-          : SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 15,
-              mainAxisSpacing: 15,
-              childAspectRatio: 1.35,
-              children: [
-                dashboardCard(
-                  "Cars",
-                  totalCars.toString(),
-                  Icons.directions_car,
-                ),
-                dashboardCard(
-                  "Users",
-                  totalUsers.toString(),
-                  Icons.people,
-                ),
-                dashboardCard(
-                  "Bookings",
-                  totalBookings.toString(),
-                  Icons.calendar_month,
-                ),
-                dashboardCard(
-                  "Pending",
-                  pendingBookings.toString(),
-                  Icons.pending_actions,
-                ),
-              ],
-            ),
 
-            const SizedBox(height: 25),
-
-            menuTile(
-              "Manage Cars",
-              Icons.directions_car,
-                  () {
-                Get.to(() => const ManageCarsScreen());
-              },
-            ),
-
-            menuTile(
-              "Manage Bookings",
-              Icons.book_online,
-                  () {
-                Get.to(() => const ManageBookingsScreen());
-              },
-            ),
-
-            menuTile(
-              "Manage Users",
-              Icons.people,
-                  () {
-                Get.to(() => const ManageUsersScreen());
-              },
-            ),
-          ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // ❌ FIX: removed const
+            Get.offAll(() => LoginScreen());
+          },
         ),
       ),
+
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                    childAspectRatio: 1.35,
+                    children: [
+                      dashboardCard(
+                          "Cars", "$totalCars", Icons.directions_car),
+                      dashboardCard("Users", "$totalUsers", Icons.people),
+                      dashboardCard("Bookings", "$totalBookings",
+                          Icons.calendar_month),
+                      dashboardCard("Pending", "$pendingBookings",
+                          Icons.pending_actions),
+                    ],
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  menuTile("Manage Cars", Icons.directions_car, () {
+                    Get.to(() => const ManageCarsScreen());
+                  }),
+
+                  menuTile("Manage Bookings", Icons.book_online, () {
+                    Get.to(() => const ManageBookingsScreen());
+                  }),
+
+                  menuTile("Manage Users", Icons.people, () {
+                    Get.to(() => const ManageUsersScreen());
+                  }),
+                ],
+              ),
+            ),
     );
   }
 }
